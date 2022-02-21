@@ -52,7 +52,3 @@ task runRoomAll(type: JavaExec) {
             "BLINDS:ch.unisg.ics.interactions.teaching.was.fs2022.assignments._1.cnp.participants.BlindsControllerAgent;" +
             "LAMP:ch.unisg.ics.interactions.teaching.was.fs2022.assignments._1.cnp.participants.LampControllerAgent")
 }
-
-test {
-    useJUnitPlatform()
-}
