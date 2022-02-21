@@ -1,0 +1,12 @@
+# Ignore Gradle project-specific cache directory
+.gradle
+
+# Ignore Gradle build output directory
+build
+
+# Ignore edior directions
+.idea
+
+# Ignore JADE generated files
+APDescription.txt
+MTPs-*.txt
