@@ -71,7 +71,7 @@ The project is structured as follows:
 ```
 
 ### How to run the project
-Run with [Gradle 4.7](https://gradle.org/):
+Run with [Gradle 7.4](https://gradle.org/):
 
 To start the main container only with the Room Environment Agent (required for Task 1):
 ```shell
