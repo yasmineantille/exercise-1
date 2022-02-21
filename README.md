@@ -73,26 +73,11 @@ The project is structured as follows:
 ### How to run the project
 Run with [Gradle](https://gradle.org/):
 
-To start the main container only with the Room Environment Agent:
+To start the main container only with the Room Environment Agent (required for Task 1):
 ```shell
 ./gradlew runEnv
 ```
-To start the main container only with the Room Manager Agent positioned in the environment:
-```shell
-./gradlew runRoomManager
-```
-
-To start the main container only with the Room Manager Agent and the Lamp Controller Agent positioned in the environment:
-```shell
-./gradlew runRoomWithLamp
-```
-
-To start the main container only with the Room Manager Agent and the Blinds Controller Agent positioned in the environment:
-```shell
-./gradlew runRoomWithBlinds
-```
-
-To start the main container with all the agents in the environment:
+To start the main container with all the agents in the environment (required for Task 2):
 ```shell
 ./gradlew runRoomAll
 ```
