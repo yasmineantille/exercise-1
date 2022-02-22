@@ -1,4 +1,4 @@
-# Assignment 1: Writing Your First Autonomous Agent!
+# Exercise 1: Writing Your First Autonomous Agent!
 
 A partial [JADE](https://jade.tilab.com/documentation/tutorials-guides/jade-administration-tutorial/architecture-overview/) implementation of the Room Automation Use Case.
 
