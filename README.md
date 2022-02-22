@@ -71,7 +71,9 @@ The project is structured as follows:
 ```
 
 ### How to run the project
-Run with [Gradle 7.4](https://gradle.org/):
+Run with [Gradle 7.4](https://gradle.org/): 
+- MacOS and Linux: run the following commands
+- Windows: replace `./gradlew` with `gradle.bat`
 
 To start the main container only with the Room Environment Agent (required for Task 1):
 ```shell
