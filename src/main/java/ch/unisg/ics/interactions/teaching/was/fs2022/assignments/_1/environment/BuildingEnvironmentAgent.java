@@ -59,6 +59,7 @@ public class BuildingEnvironmentAgent extends BaseAgent {
     // TODO Add a behavior, such that the agent periodically prints the illuminance and the weather on the environment (Task 1)
     // HINT: Use the method addBehaviour(). As input, provide an instance of the Behaviour class
     // that you implemented below
+    addBehaviour(new PrintIlluminanceServer(this, 1000));
   }
 
   // TODO Implement a Behaviour for periodically printing the illuminance and the weather on the environment (Task 1)
@@ -81,6 +82,25 @@ public class BuildingEnvironmentAgent extends BaseAgent {
 
   public void setWeather(String weather) {
     this.weather = weather;
+  }
+
+  /**
+   * Task 1
+   */
+  private class PrintIlluminanceServer extends TickerBehaviour {
+
+    public PrintIlluminanceServer(Agent a, long period) {
+      super(a, period);
+    }
+
+    @Override
+    protected void onTick() {
+      String illuminance = getIlluminance();
+      String weather = getWeather();
+
+      LOGGER.info("ILLUMINANCE: " + illuminance);
+      LOGGER.info("WEATHER: " + weather);
+    }
   }
 
   /**
