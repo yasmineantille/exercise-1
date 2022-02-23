@@ -219,7 +219,7 @@ public class RoomManagerAgent extends CNPInitiator {
           if (msg != null) {
             // Message received
             // If the sender INFORMS about the progress of the service:
-            // 2.1) extract the sender and the serviceType
+            // 2.1) extract the sender 
             // 2.2) print the serviceType, the sender, the bestOffer, and that the service was successfully completed.
 
             // If the sender does not INFORM:
