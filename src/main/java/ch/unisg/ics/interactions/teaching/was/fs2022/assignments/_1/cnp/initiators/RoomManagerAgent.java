@@ -153,14 +153,12 @@ public class RoomManagerAgent extends CNPInitiator {
           }
 
           // 4) Set the content, i.e. the serviceType
-          msg.setContent(serviceType);
+          msg.setContent(serviceType); // does serviceType here automatically refer to "increase-illuminance"?
 
           // 5) Set additional message meta-data, that are used to identify the incoming messages
           // of the conversation
           msg.setConversationId("cfp-" + serviceType);
           msg.setReplyWith("cfp-" + System.currentTimeMillis());
-
-          LOGGER.info("TESTING TESTING TESTING TESTING");
 
           // 6) Send the message
           myAgent.send(msg);
@@ -168,7 +166,7 @@ public class RoomManagerAgent extends CNPInitiator {
           LOGGER.info("CFP " + serviceType);
 
           // 7) Prepare the template to get proposals within this conversation
-          msgTemplate = MessageTemplate.and(MessageTemplate.MatchConversationId("cfp-" + serviceType),
+          msgTemplate = MessageTemplate.and(MessageTemplate.MatchConversationId(msg.getConversationId()),
                   MessageTemplate.MatchInReplyTo(msg.getReplyWith()));
 
           // 8) Update protocol phase and break
@@ -199,11 +197,11 @@ public class RoomManagerAgent extends CNPInitiator {
               if(bestOffer == null) {
                 bestOffer = offer;
                 bestParticipant = sender;
-              } else {
-                if(isGoodOffer(offer) && !isGoodOffer(bestOffer)) {
-                  bestOffer = offer;
-                  bestParticipant = sender;
-                }
+              }
+
+              if(isGoodOffer(offer) && !isGoodOffer(bestOffer)) {
+                bestOffer = offer;
+                bestParticipant = sender;
               }
             }
 
@@ -242,7 +240,7 @@ public class RoomManagerAgent extends CNPInitiator {
 
           // 7) Prepare the template to receive information about the progress of the service within
           // this conversation
-          msgTemplate = MessageTemplate.and(MessageTemplate.MatchConversationId("acceptProposal-" + serviceType + "-with-" + bestOffer),
+          msgTemplate = MessageTemplate.and(MessageTemplate.MatchConversationId(acceptProposalMsg.getConversationId()),
                   MessageTemplate.MatchInReplyTo(acceptProposalMsg.getReplyWith()));
 
           // 8) Update protocol phase and break
