@@ -138,26 +138,43 @@ public class RoomManagerAgent extends CNPInitiator {
 
           // 1) Terminate behavior if there is not at least one agent providing the service of serviceType
           // HINT: If the participants set is empty, update the protocol phase step=4 and break.
+          if(participants.isEmpty()) {
+            step = 4;
+            break;
+          }
 
           // The agent CALLS FOR PROPOSALS to service providers to increase illuminance
           // 2) Create an ACL Message with the appropriate performative
+          ACLMessage msg = new ACLMessage(ACLMessage.CFP);
 
           // 3) Add all receivers of the participants set
+          for (AID receiver: participants) {
+            msg.addReceiver(receiver);
+          }
 
           // 4) Set the content, i.e. the serviceType
+          msg.setContent(serviceType);
 
           // 5) Set additional message meta-data, that are used to identify the incoming messages
           // of the conversation
+          msg.setConversationId("cfp-" + serviceType);
+          msg.setReplyWith("cfp-" + System.currentTimeMillis());
+
+          LOGGER.info("TESTING TESTING TESTING TESTING");
 
           // 6) Send the message
+          myAgent.send(msg);
 
           LOGGER.info("CFP " + serviceType);
 
           // 7) Prepare the template to get proposals within this conversation
+          msgTemplate = MessageTemplate.and(MessageTemplate.MatchConversationId("cfp-" + serviceType),
+                  MessageTemplate.MatchInReplyTo(msg.getReplyWith()));
 
           // 8) Update protocol phase and break
-
-          block(); // remove this line after implementing case 0
+          step = 1;
+          break;
+          // block(); // remove this line after implementing case 0
         case 1: // TODO Implement the case to handle incoming proposals of this conversation
 
           // The agent continuously accepts messages (with any performative)
@@ -166,7 +183,7 @@ public class RoomManagerAgent extends CNPInitiator {
           // 1) Accept messages from the agents that were contacted on step 0
           // HINT: Update the following line to use myAgent.receive(msgTemplate), where the msgTemplate
           // is the template that you prepared on step 7) of case:0.
-          ACLMessage msg = null;
+          msg = myAgent.receive(msgTemplate);
 
           if (msg != null) {
             // Message received
@@ -176,13 +193,27 @@ public class RoomManagerAgent extends CNPInitiator {
             // 2.3) if there is former proposal, check if the offer is good and, if needed, update the bestParticipant
             //      and bestOffer.
             //      HINT: Use the method isGoodOffer() to determine whether an offer is best
+            if(msg.getPerformative() == ACLMessage.PROPOSE) {
+              AID sender = msg.getSender();
+              String offer = msg.getContent();
+              if(bestOffer == null) {
+                bestOffer = offer;
+                bestParticipant = sender;
+              } else {
+                if(isGoodOffer(offer) && !isGoodOffer(bestOffer)) {
+                  bestOffer = offer;
+                  bestParticipant = sender;
+                }
+              }
+            }
 
             // 3) Update the number of messages received in this conversation (not only PROPOSE messages)
             // HINT: Increase the value of repliesCounter
+            repliesCounter += 1;
 
             // 4) If messages were received by all participants, update the protocol phase
             // HINT: Compare the repliesCounter with the size of the participants set
-
+            if (repliesCounter == participants.size()) step = 2;
           } else {
             // Block the behavior until a new message that matches the template is received
             block();
@@ -191,44 +222,59 @@ public class RoomManagerAgent extends CNPInitiator {
         case 2: // TODO: Implement the case to send ACCEPT PROPOSAL messages
           // The agent ACCEPTS the PROPOSAL of the bestParticipant
           // 1) Create an ACL Message with the appropriate performative
+          ACLMessage acceptProposalMsg = new ACLMessage(ACLMessage.ACCEPT_PROPOSAL);
 
           // 2) Add the receiver, i.e. the bestParticipant
+          acceptProposalMsg.addReceiver(bestParticipant);
 
           // 3) Set the content, i.e. the bestOffer
+          acceptProposalMsg.setContent(bestOffer);
 
           // 4) Set additional message meta-data, that are used to identify the incoming messages
           // of the conversation
+          acceptProposalMsg.setConversationId("acceptProposal-" + serviceType + "-with-" + bestOffer);
+          acceptProposalMsg.setReplyWith("acceptProposal-" + System.currentTimeMillis());
 
           // 5) Send the message
+          myAgent.send(acceptProposalMsg);
 
           LOGGER.info("ACCEPT PROPOSAL " + serviceType + " with " + bestOffer);
 
           // 7) Prepare the template to receive information about the progress of the service within
           // this conversation
+          msgTemplate = MessageTemplate.and(MessageTemplate.MatchConversationId("acceptProposal-" + serviceType + "-with-" + bestOffer),
+                  MessageTemplate.MatchInReplyTo(acceptProposalMsg.getReplyWith()));
 
           // 8) Update protocol phase and break
-
-          block(); // remove this line after implementing case 2
+          step = 3;
+          break;
+          // block(); // remove this line after implementing case 2
         case 3: // TODO: Implement the case to handle incoming information about the progress of the service within this conversation
 
           // 1) Accept messages from the agents that were contacted on step 2
           // HINT: Update the following line to use myAgent.receive(msgTemplate), where the msgTemplate
           // is the template that you prepared on step 7) of case:2.
-          msg = null;
+          msg = myAgent.receive(msgTemplate);
 
           if (msg != null) {
             // Message received
             // If the sender INFORMS about the progress of the service:
             // 2.1) extract the sender and the serviceType
             // 2.2) print the serviceType, the sender, the bestOffer, and that the service was successfully completed.
-
+            if (msg.getPerformative() == ACLMessage.INFORM) {
+              AID sender = msg.getSender();
+              String serviceType = msg.getContent();
+              LOGGER.info("Progress of service " + serviceType + " informed by " + sender + " with offer " + bestOffer + ". Successfully completed.");
+            } else {
+              LOGGER.info("Service " + serviceType + " not successfully completed.");
+            }
             // If the sender does not INFORM:
             // 3) print the serviceType, and that the service was not successfully completed.
 
-            LOGGER.info("Remove me to report about success of failure of executing" + serviceType);
+            // LOGGER.info("Remove me to report about success of failure of executing" + serviceType);
 
             // 4) Update protocol phase
-
+            step = 4;
           } else {
             // Block the behavior until a new message that matches the template is received
             block();
